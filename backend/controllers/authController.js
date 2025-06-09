@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
+import jwt from "jsonwebtoken";
 
 const cookieOptions = {
   httpOnly: true,
@@ -21,7 +22,7 @@ export const register = async (req, res) => {
   const token = generateToken(user._id);
   res
     .cookie("token", token, cookieOptions)
-    .status(201)
+    .status(200)
     .json({message: "User registered successfully"});
 };
 
@@ -36,6 +37,19 @@ export const login = async (req, res) => {
   res
     .cookie("token", token, cookieOptions)
     .json({message: "Logged in successfully"});
+};
+
+export const verify = async (req, res) => {
+   const token = req.cookies.token;
+
+  if (!token) return res.status(401).json({ message: "Not authenticated" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Token is invalid" });
+
+    // You may fetch user from DB using decoded.id if needed
+    res.status(200).json({ user: decoded });
+  });
 };
 
 export const logout = (req, res) => {

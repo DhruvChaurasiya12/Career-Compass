@@ -5,12 +5,12 @@ import axios from '../services/api'; // Your Axios instance with credentials ena
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check auth on page load
-    axios.get('/auth/verify') // This route should verify JWT in cookie
+    axios.get('http://localhost:5000/api/auth/verify') // This route should verify JWT in cookie
       .then(() => setAuthenticated(true))
       .catch(() => setAuthenticated(false))
       .finally(() => setLoading(false));

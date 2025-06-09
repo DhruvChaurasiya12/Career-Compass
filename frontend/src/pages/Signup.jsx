@@ -50,7 +50,7 @@ const Signup = () => {
     }
 
     try {
-      const signup = await axios.post("/api/signup", formData, {
+      const signup = await axios.post("http://localhost:5000/api/auth/signup", formData, {
         withCredentials: true,
       });
 

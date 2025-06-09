@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -36,13 +39,13 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("/api/login", formData, {
+      const response = await axios.post("http://localhost:5000/api/auth/login", formData, {
         withCredentials: true,
       });
 
       if (response.status === 200) {
         console.log("Login successful");
-        window.location.href = "/profile";
+        navigate("/dashboard"); 
       }
     } catch (error) {
       const message = error.response?.data?.message || "Login failed. Please check your credentials.";
