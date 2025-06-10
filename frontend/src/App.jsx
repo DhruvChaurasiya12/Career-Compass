@@ -15,10 +15,8 @@ import ResumeReview from "./pages/ResumeReview";
 import JDGuidance from "./pages/JDGuidance";
 import Profile from "./pages/Profile";
 
-import Navbar from "./components/Navbar";
 
 const App = () => {
-  const isAuthenticated = true; // Replace with real auth logic
 
   return (
     <Router>
