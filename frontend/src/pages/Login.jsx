@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -21,12 +21,11 @@ const Login = () => {
     setErrorMsg(""); // Clear error on input
   };
 
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    const { email, password } = formData;
+    const {email, password} = formData;
 
     if (!email || !password) {
       setErrorMsg("Both email and password are required.");
@@ -39,16 +38,22 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/login",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.status === 200) {
         console.log("Login successful");
-        navigate("/dashboard"); 
+        navigate("/dashboard");
       }
     } catch (error) {
-      const message = error.response?.data?.message || "Login failed. Please check your credentials.";
+      const message =
+        error.response?.data?.message ||
+        "Login failed. Please check your credentials.";
       setErrorMsg(message);
     }
   };

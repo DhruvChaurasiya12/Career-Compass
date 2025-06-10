@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Signup = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -22,15 +22,14 @@ const Signup = () => {
     setErrorMsg(""); // Clear error on input change
   };
 
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const isStrongPassword = (password) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
 
   const submitHandler = async (event) => {
     event.preventDefault();
-    const { fullname, email, password } = formData;
+    const {fullname, email, password} = formData;
 
     if (!fullname || !email || !password) {
       setErrorMsg("All fields are required.");
@@ -50,16 +49,21 @@ const Signup = () => {
     }
 
     try {
-      const signup = await axios.post("http://localhost:5000/api/auth/signup", formData, {
-        withCredentials: true,
-      });
+      const signup = await axios.post(
+        "http://localhost:8000/api/auth/signup",
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (signup.status === 200) {
         console.log("Signup successful");
-        navigate("/login");
+        navigate("/dashboard");
       }
     } catch (error) {
-      const message = error.response?.data?.message || "Signup failed. Please try again.";
+      const message =
+        error.response?.data?.message || "Signup failed. Please try again.";
       setErrorMsg(message);
     }
   };

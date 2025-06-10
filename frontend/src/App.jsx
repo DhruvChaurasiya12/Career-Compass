@@ -1,16 +1,21 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import PrivateRoute from './components/PrivateRoute';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
 
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import AddApplication from './pages/AddApplication';
-import ResumeReview from './pages/ResumeReview';
-import JDGuidance from './pages/JDGuidance';
-import Profile from './pages/Profile';
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import AddApplication from "./pages/AddApplication";
+import ResumeReview from "./pages/ResumeReview";
+import JDGuidance from "./pages/JDGuidance";
+import Profile from "./pages/Profile";
 
-import Navbar from './components/Navbar';
+import Navbar from "./components/Navbar";
 
 const App = () => {
   const isAuthenticated = true; // Replace with real auth logic

@@ -12,6 +12,7 @@ const cookieOptions = {
 
 export const register = async (req, res) => {
   const {fullName, email, password} = req.body;
+
   const userExists = await User.findOne({email});
 
   if (userExists) return res.status(400).json({message: "User already exists"});
@@ -40,15 +41,15 @@ export const login = async (req, res) => {
 };
 
 export const verify = async (req, res) => {
-   const token = req.cookies.token;
+  const token = req.cookies.token;
 
-  if (!token) return res.status(401).json({ message: "Not authenticated" });
+  if (!token) return res.status(401).json({message: "Not authenticated"});
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Token is invalid" });
+    if (err) return res.status(403).json({message: "Token is invalid"});
 
     // You may fetch user from DB using decoded.id if needed
-    res.status(200).json({ user: decoded });
+    res.status(200).json({user: decoded});
   });
 };
 

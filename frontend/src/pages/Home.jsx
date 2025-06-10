@@ -1,12 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { LuBriefcase, LuLightbulb } from "react-icons/lu";
+import {Link} from "react-router-dom";
+import {LuBriefcase, LuLightbulb} from "react-icons/lu";
 import FeatureCard from "../components/FeatureCard";
-import { IoDocumentTextOutline } from "react-icons/io5";
-import { BiBullseye } from "react-icons/bi";
+import {IoDocumentTextOutline} from "react-icons/io5";
+import {BiBullseye} from "react-icons/bi";
 import Footer from "../components/Footer";
+import {useAuth} from "../context/AuthContext";
 
 const Home = () => {
+  const {authenticated} = useAuth();
   return (
     <div className="min-h-screen bg-blue-50">
       {/* Header */}
@@ -15,10 +17,11 @@ const Home = () => {
           CareerCompass
         </h2>
         <div className="flex items-center gap-4">
-          <Link to="/login">
+          <Link to={authenticated ? "/dashboard" : "/login"}>
             <button className="text-white hover:underline">Login</button>
           </Link>
-          <Link to="/signup">
+
+          <Link to={authenticated ? "/dashboard" : "/signup"}>
             <button className="bg-blue-400 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200">
               Sign Up
             </button>
