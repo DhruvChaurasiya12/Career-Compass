@@ -1,11 +1,11 @@
 import React, {useState} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setAuthenticated } = useAuth(); // Access the setAuthenticated function from AuthContext
+  const {setAuthenticated} = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -49,6 +49,7 @@ const Login = () => {
       );
 
       if (response.status === 200) {
+        setAuthenticated(true);
         console.log("Login successful");
         setAuthenticated(true); // Update authentication state
         setFormData({ email: "", password: "" }); // Clear form fields

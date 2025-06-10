@@ -1,84 +1,103 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react'; 
-import { LuBriefcase } from "react-icons/lu";
+import React from "react";
+import {NavLink, useNavigate} from "react-router-dom";
+import {
+  FiHome,
+  FiPlus,
+  FiFileText,
+  FiSearch,
+  FiUser,
+  FiLogOut,
+} from "react-icons/fi";
+import {useAuth} from "../context/AuthContext";
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const { pathname } = useLocation();
+export const Navbar = () => {
+  const {setAuthenticated} = useAuth();
+  const navigate = useNavigate();
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // send cookies to backend
+      });
+
+      if (response.ok) {
+        setAuthenticated(false);
+        navigate("/");
+      } else {
+        console.error("Logout failed.");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   const navLinks = [
-    { name: "Dashboard", path: "/dashboard",  },
-    { name: "Add Application", path: "/add-application" },
-    { name: "JD Guidance", path: "/jd-guidance" },
-    { name: "Resume Review", path: "/resume-review" },
-    { name: "Profile", path: "/profile" },
-    { name: "Logout", path: "/logout" }
+    {name: "Dashboard", path: "/dashboard", icon: <FiHome />},
+    {name: "Add Application", path: "/add-application", icon: <FiPlus />},
+    {name: "Resume Review", path: "/resume-review", icon: <FiFileText />},
+    {name: "JD Guidance", path: "/jd-guidance", icon: <FiSearch />},
+    {name: "Profile", path: "/profile", icon: <FiUser />},
   ];
 
   return (
-    <nav className="bg-white shadow-md fixed w-full top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-gray-100 border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+      {/* Logo / App Name */}
+      <div
+        onClick={() => navigate("/dashboard")}
+        className="flex items-center space-x-2 cursor-pointer"
+      >
+        <svg
+          className="w-6 h-6 text-gray-800"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 8c-1.657 0-3 1.343-3 3v4h6v-4c0-1.657-1.343-3-3-3z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5 12h14v8H5z"
+          />
+        </svg>
+        <span className="font-bold text-xl text-gray-900">
+          Career<span className="font-light">Compass</span>
+        </span>
+      </div>
 
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <LuBriefcase className="text-blue-600 text-2xl" />
-            <Link to="/dashboard" className="text-xl font-bold text-blue-600">CareerCompass</Link>
-          </div>
+      {/* Navigation Links */}
+      <div className="flex items-center space-x-6">
+        {navLinks.map((link) => (
+          <NavLink
+            key={link.name}
+            to={link.path}
+            className={({isActive}) =>
+              `flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition ${
+                isActive
+                  ? "bg-gray-200 text-gray-900"
+                  : "text-gray-700 hover:text-gray-900"
+              }`
+            }
+          >
+            <span className="text-lg">{link.icon}</span>
+            <span>{link.name}</span>
+          </NavLink>
+        ))}
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex space-x-4">
-            {navLinks.map(link => (
-              <li key={link.name}>
-                <Link
-                  to={link.path}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
-                    ${
-                      pathname === link.path
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700'
-                    }`}
-                >
-                  {link.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-gray-700 focus:outline-none">
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Dropdown */}
-        {isOpen && (
-          <div className="md:hidden mt-2 rounded-md bg-white shadow-lg py-2 px-4 space-y-2">
-            {navLinks.map(link => (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`block rounded-md px-3 py-2 text-sm font-medium transition-all duration-200
-                  ${
-                    pathname === link.path
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-blue-100 hover:text-blue-700'
-                  }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-        )}
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-1 px-3 py-1 text-red-600 hover:text-red-800 text-sm font-medium"
+        >
+          <FiLogOut className="text-lg" />
+          <span>Logout</span>
+        </button>
       </div>
     </nav>
   );
 };
-
-export default Navbar;
