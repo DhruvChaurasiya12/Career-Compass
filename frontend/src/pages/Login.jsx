@@ -51,7 +51,9 @@ const Login = () => {
       if (response.status === 200) {
         setAuthenticated(true);
         console.log("Login successful");
-        navigate("/dashboard");
+        setAuthenticated(true); // Update authentication state
+        setFormData({ email: "", password: "" }); // Clear form fields
+        navigate("/dashboard"); 
       }
     } catch (error) {
       const message =

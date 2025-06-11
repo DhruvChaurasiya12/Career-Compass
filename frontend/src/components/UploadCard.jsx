@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 
 export const UploadCard = ({
@@ -33,19 +34,21 @@ export const UploadCard = ({
     setFeedback("");
 
     try {
-      // Simulate backend API call
-      const result = await new Promise((resolve) =>
-        setTimeout(
-          () =>
-            resolve(
-              "Your resume demonstrates good leadership, but consider improving technical skills and project experience."
-            ),
-          3000
-        )
-      );
+      const formData = new FormData();
+      formData.append("resume", file);
 
-      setFeedback(result);
+      const result = await axios.post("http://localhost:8000/api/analysis/resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Assuming response.data has the feedback text
+      setFeedback(result.data?.result || "Resume analyzed successfully.");
+      console.log("Resume analysis result:", result.data);
+      console.log("Feedback:", result.data?.result);
     } catch (error) {
+      console.error(error);
       setFeedback("Failed to analyze resume. Please try again.");
     } finally {
       setIsAnalyzing(false);
@@ -53,10 +56,11 @@ export const UploadCard = ({
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
+    <div className="bg-white shadow rounded-lg p-6 w-full max-w-xl mx-auto">
       <h2 className="text-lg font-semibold mb-4">
         Upload Resume (PDF, DOCX, TXT - Max 5MB)
       </h2>
+
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -69,10 +73,7 @@ export const UploadCard = ({
           className="hidden"
           id="fileUpload"
         />
-        <label
-          htmlFor="fileUpload"
-          className="flex flex-col items-center justify-center space-y-2"
-        >
+        <label htmlFor="fileUpload" className="flex flex-col items-center justify-center space-y-2 cursor-pointer">
           <svg
             className="w-12 h-12 text-blue-400"
             fill="none"
@@ -87,8 +88,7 @@ export const UploadCard = ({
             />
           </svg>
           <p className="text-gray-600 font-medium">
-            Upload a file{" "}
-            <span className="text-gray-400">or drag and drop</span>
+            Upload a file <span className="text-gray-400">or drag and drop</span>
           </p>
           <p className="text-sm text-gray-400">PDF, DOCX, TXT up to 5MB</p>
         </label>
@@ -96,13 +96,13 @@ export const UploadCard = ({
 
       {file && (
         <div className="mt-4 bg-gray-100 p-2 rounded flex items-center justify-between">
-          <span className="text-sm text-gray-700">{file.name}</span>
+          <span className="text-sm text-gray-700 truncate w-64">{file.name}</span>
           <button
             onClick={() => {
               setFile(null);
               setFeedback("");
             }}
-            className="text-gray-500 hover:text-red-500"
+            className="text-gray-500 hover:text-red-500 text-xl"
           >
             &times;
           </button>
@@ -112,14 +112,18 @@ export const UploadCard = ({
       <button
         onClick={handleAnalyze}
         className={`mt-4 w-full ${
-          isAnalyzing
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gray-600 hover:bg-gray-700"
-        } text-white py-2 rounded-md transition flex items-center justify-center gap-2`}
+          isAnalyzing ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+        } text-white py-2 rounded-md transition`}
         disabled={!file || isAnalyzing}
       >
         {isAnalyzing ? "Analyzing..." : "Analyze Resume"}
       </button>
+
+      {setFeedback && (
+        <div className="mt-4 text-sm text-gray-700">
+          {isAnalyzing ? null : setFeedback}
+        </div>
+      )}
     </div>
   );
 };

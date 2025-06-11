@@ -2,7 +2,7 @@ import React from "react";
 
 export const FeedbackCard = ({file, isAnalyzing, feedback}) => {
   return (
-    <div className="bg-white shadow rounded-lg p-6 flex flex-col text-center relative min-h-[200px]">
+    <div className="bg-white shadow justigy-center rounded-lg p-6 flex flex-col text-center relative min-h-[200px]">
       <h2 className="text-lg font-semibold mb-4">
         Feedback for {file ? file.name : "Resume"}
       </h2>
@@ -12,7 +12,7 @@ export const FeedbackCard = ({file, isAnalyzing, feedback}) => {
           <p className="text-gray-400">Analyzing...</p>
         </div>
       ) : feedback ? (
-        <div className="text-gray-700 text-left">{feedback}</div>
+        <div className="text-gray-700">{feedback}</div>
       ) : (
         <div className="flex flex-col items-center justify-center text-center text-gray-500">
           <svg

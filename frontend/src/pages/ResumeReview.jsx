@@ -2,6 +2,7 @@ import {FeedbackCard} from "../components/FeedbackCard";
 import {UploadCard} from "../components/UploadCard";
 import {useState} from "react";
 
+
 export default function ResumeReview() {
   const [file, setFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
