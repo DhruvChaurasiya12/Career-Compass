@@ -1,12 +1,36 @@
-import {FeedbackCard} from "../components/FeedbackCard";
+import React, {useState} from "react";
 import {UploadCard} from "../components/UploadCard";
-import {useState} from "react";
-
+import {FeedbackCard} from "../components/FeedbackCard";
 
 export default function ResumeReview() {
   const [file, setFile] = useState(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleAnalyze = async () => {
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      setFeedback(""); // Clear previous feedback
+
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      const response = await fetch("http://localhost:8000/api/analysis/jd", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      setFeedback(data.feedback); // Assumes {feedback: "..."} from backend
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+      setFeedback("An error occurred while analyzing the resume.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -16,29 +40,22 @@ export default function ResumeReview() {
           AI Resume Review
         </h1>
         <p className="text-gray-500">
-          Upload your resume to get AI-powered feedback on its strengths, areas
-          for improvement, and key skills to highlight.
+          Upload your resume to get AI-powered feedback on strengths,
+          improvements, and key skills to highlight.
         </p>
         <hr className="mt-4 border-gray-300" />
       </div>
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Upload Card */}
         <UploadCard
           file={file}
           setFile={setFile}
-          isAnalyzing={isAnalyzing}
-          setIsAnalyzing={setIsAnalyzing}
+          onAnalyze={handleAnalyze}
+          loading={loading}
           setFeedback={setFeedback}
         />
-
-        {/* Feedback Card */}
-        <FeedbackCard
-          file={file}
-          isAnalyzing={isAnalyzing}
-          feedback={feedback}
-        />
+        <FeedbackCard file={file} loading={loading} feedback={feedback} />
       </div>
     </div>
   );

@@ -1,11 +1,8 @@
-import axios from "axios";
-import React from "react";
-
 export const UploadCard = ({
   file,
   setFile,
-  isAnalyzing,
-  setIsAnalyzing,
+  onAnalyze,
+  loading,
   setFeedback,
 }) => {
   const handleDragOver = (e) => {
@@ -27,34 +24,6 @@ export const UploadCard = ({
     }
   };
 
-  const handleAnalyze = async () => {
-    if (!file) return;
-
-    setIsAnalyzing(true);
-    setFeedback("");
-
-    try {
-      const formData = new FormData();
-      formData.append("resume", file);
-
-      const result = await axios.post("http://localhost:8000/api/analysis/resume", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      // Assuming response.data has the feedback text
-      setFeedback(result.data?.result || "Resume analyzed successfully.");
-      console.log("Resume analysis result:", result.data);
-      console.log("Feedback:", result.data?.result);
-    } catch (error) {
-      console.error(error);
-      setFeedback("Failed to analyze resume. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
   return (
     <div className="bg-white shadow rounded-lg p-6 w-full max-w-xl mx-auto">
       <h2 className="text-lg font-semibold mb-4">
@@ -73,7 +42,10 @@ export const UploadCard = ({
           className="hidden"
           id="fileUpload"
         />
-        <label htmlFor="fileUpload" className="flex flex-col items-center justify-center space-y-2 cursor-pointer">
+        <label
+          htmlFor="fileUpload"
+          className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
+        >
           <svg
             className="w-12 h-12 text-blue-400"
             fill="none"
@@ -88,7 +60,8 @@ export const UploadCard = ({
             />
           </svg>
           <p className="text-gray-600 font-medium">
-            Upload a file <span className="text-gray-400">or drag and drop</span>
+            Upload a file{" "}
+            <span className="text-gray-400">or drag and drop</span>
           </p>
           <p className="text-sm text-gray-400">PDF, DOCX, TXT up to 5MB</p>
         </label>
@@ -96,7 +69,9 @@ export const UploadCard = ({
 
       {file && (
         <div className="mt-4 bg-gray-100 p-2 rounded flex items-center justify-between">
-          <span className="text-sm text-gray-700 truncate w-64">{file.name}</span>
+          <span className="text-sm text-gray-700 truncate w-64">
+            {file.name}
+          </span>
           <button
             onClick={() => {
               setFile(null);
@@ -110,20 +85,16 @@ export const UploadCard = ({
       )}
 
       <button
-        onClick={handleAnalyze}
+        onClick={onAnalyze}
         className={`mt-4 w-full ${
-          isAnalyzing ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
         } text-white py-2 rounded-md transition`}
-        disabled={!file || isAnalyzing}
+        disabled={!file || loading}
       >
-        {isAnalyzing ? "Analyzing..." : "Analyze Resume"}
+        {loading ? "Analyzing..." : "Analyze Resume"}
       </button>
-
-      {setFeedback && (
-        <div className="mt-4 text-sm text-gray-700">
-          {isAnalyzing ? null : setFeedback}
-        </div>
-      )}
     </div>
   );
 };
