@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-import React from 'react'
-
-const ResumeReview = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
-
-export default ResumeReview
-=======
 import {FeedbackCard} from "../components/FeedbackCard";
 import {UploadCard} from "../components/UploadCard";
 import {useState} from "react";
+
 
 export default function ResumeReview() {
   const [file, setFile] = useState(null);
@@ -55,4 +43,3 @@ export default function ResumeReview() {
     </div>
   );
 }
->>>>>>> f9dc65a777271aa2426734d5e38a28f490005ce3

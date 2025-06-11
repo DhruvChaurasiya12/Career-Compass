@@ -6,7 +6,7 @@ import { configDotenv } from "dotenv";
 
 configDotenv(); // Load environment variables from .env
 
-export const analyzeResume = async (req, res) => {
+export const jdGuidance = async (req, res) => {
   try {
     console.log("📥 Resume analysis request received");
 
@@ -16,7 +16,7 @@ export const analyzeResume = async (req, res) => {
 
     const filePath = req.file.path;
     let resumeText = "";
-
+    const jobDescription = req.body.jobDescription || " No job description provided.";
     try {
       if (req.file.mimetype === "application/pdf") {
         const dataBuffer = fs.readFileSync(filePath);
@@ -45,11 +45,12 @@ export const analyzeResume = async (req, res) => {
     fs.unlinkSync(filePath);
 
     const prompt = `
-You are a resume reviewer. Analyze the following resume.
+You are a resume reviewer. Analyze the following resume for given job description.
 
 Resume:
 ${resumeText}
 
+${`Job Description: ${jobDescription}`}
 
 Return suggestions to improve the resume in one paragraph and give a plain text output, that is no headings, bolds etc.
     `.trim();
@@ -87,7 +88,7 @@ Return suggestions to improve the resume in one paragraph and give a plain text 
       openRouterResponse?.data?.choices?.[0]?.message?.content ||
       "No response from model.";
 
-    return res.json({ result: resultText });
+    return res.json({ feedback: resultText });
   } catch (err) {
     console.error("❌ Resume analysis failed:", err);
     return res.status(500).json({
