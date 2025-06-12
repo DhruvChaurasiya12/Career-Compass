@@ -1,5 +1,5 @@
 import React from "react";
-import {NavLink, useNavigate} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FiHome,
   FiPlus,
@@ -8,17 +8,17 @@ import {
   FiUser,
   FiLogOut,
 } from "react-icons/fi";
-import {useAuth} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export const Navbar = () => {
-  const {setAuthenticated} = useAuth();
+  const { setAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       const response = await fetch("http://localhost:8000/api/auth/logout", {
         method: "POST",
-        credentials: "include", // send cookies to backend
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -33,22 +33,21 @@ export const Navbar = () => {
   };
 
   const navLinks = [
-    {name: "Dashboard", path: "/dashboard", icon: <FiHome />},
-    {name: "Add Application", path: "/add-application", icon: <FiPlus />},
-    {name: "Resume Review", path: "/resume-review", icon: <FiFileText />},
-    {name: "JD Guidance", path: "/jd-guidance", icon: <FiSearch />},
-    {name: "Profile", path: "/profile", icon: <FiUser />},
+    { name: "Dashboard", path: "/dashboard", icon: <FiHome /> },
+    { name: "Resume Review", path: "/resume-review", icon: <FiFileText /> },
+    { name: "JD Guidance", path: "/jd-guidance", icon: <FiSearch /> },
+    { name: "Profile", path: "/profile", icon: <FiUser /> },
   ];
 
   return (
-    <nav className="bg-gray-100 border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-      {/* Logo / App Name */}
+    <nav className="bg-white shadow-sm border-b border-gray-200 px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      {/* Logo */}
       <div
         onClick={() => navigate("/dashboard")}
-        className="flex items-center space-x-2 cursor-pointer"
+        className="flex items-center space-x-2 cursor-pointer mb-2 sm:mb-0"
       >
         <svg
-          className="w-6 h-6 text-gray-800"
+          className="w-6 h-6 text-blue-600"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -65,22 +64,22 @@ export const Navbar = () => {
             d="M5 12h14v8H5z"
           />
         </svg>
-        <span className="font-bold text-xl text-gray-900">
+        <span className="text-xl font-semibold text-gray-800">
           Career<span className="font-light">Compass</span>
         </span>
       </div>
 
-      {/* Navigation Links */}
-      <div className="flex items-center space-x-6">
+      {/* Links */}
+      <div className="flex flex-wrap items-center gap-4">
         {navLinks.map((link) => (
           <NavLink
             key={link.name}
             to={link.path}
-            className={({isActive}) =>
-              `flex items-center space-x-1 px-3 py-1 rounded-md text-sm font-medium transition ${
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition ${
                 isActive
-                  ? "bg-gray-200 text-gray-900"
-                  : "text-gray-700 hover:text-gray-900"
+                  ? "bg-blue-100 text-blue-700 font-semibold"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`
             }
           >
@@ -92,7 +91,7 @@ export const Navbar = () => {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-1 px-3 py-1 text-red-600 hover:text-red-800 text-sm font-medium"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition"
         >
           <FiLogOut className="text-lg" />
           <span>Logout</span>

@@ -1,61 +1,56 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ApplicationCard from "../components/ApplicationCard";
+import React, { useState, useEffect, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
+import ApplicationCard from "../components/ApplicationCard";
+import AddApplicationModal from "../components/AddApplicationModal";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedAppId, setSelectedAppId] = useState(null);
 
-  const applications = [
-    {
-      id: 1,
-      company: "Creative Agency",
-      position: "UI/UX Designer",
-      status: "Applied",
-      date: "2024-07-18",
-    },
-    {
-      id: 2,
-      company: "Tech Solutions Inc.",
-      position: "Frontend Developer",
-      status: "Applied",
-      date: "2024-07-15",
-    },
-    {
-      id: 3,
-      company: "Innovate Hub",
-      position: "Full Stack Engineer",
-      status: "Interview",
-      date: "2024-07-10",
-    },
-    {
-      id: 4,
-      company: "Data Corp",
-      position: "Data Analyst",
-      status: "Offer",
-      date: "2024-06-20",
-    },
-    {
-      id: 5,
-      company: "Biz Group",
-      position: "Project Manager",
-      status: "Rejected",
-      date: "2024-05-01",
-    },
-  ];
+  const fetchApplications = useCallback(async () => {
+  try {
+    const query = new URLSearchParams();
+    if (status) query.append("status", status);
+    if (sortOrder) query.append("sort", sortOrder);
+
+    const response = await axios.get(`http://localhost:8000/api/applications?${query.toString()}`, {
+      withCredentials: true,
+    });
+    setApplications(response.data);
+  } catch (err) {
+    console.error("Error fetching applications:", err);
+  }
+}, [status, sortOrder]);
+
+useEffect(() => {
+  fetchApplications();
+}, [fetchApplications]);
+
+
+  const filteredApps = applications.filter(
+    (app) =>
+      app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      {/* Header */}
+    <div className="min-h-screen bg-blue-50 px-6 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Job Applications Dashboard</h1>
-        <p className="text-gray-500 mt-1">Track and manage all your job applications efficiently.</p>
+        <h1 className="text-3xl font-bold text-blue-900">
+          Job Applications Dashboard
+        </h1>
+        <p className="text-gray-700 mt-1">
+          Track and manage all your job applications efficiently.
+        </p>
       </div>
 
-      {/* Filters and Add Button */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full md:w-4/5">
           <div className="relative">
@@ -65,13 +60,14 @@ const Dashboard = () => {
               placeholder="Search company or role..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
+
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="px-4 py-2 border rounded-md shadow-sm"
+            className="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
           >
             <option value="">All Statuses</option>
             <option value="Applied">Applied</option>
@@ -79,11 +75,11 @@ const Dashboard = () => {
             <option value="Rejected">Rejected</option>
             <option value="Offer">Offer</option>
           </select>
-          <input type="date" className="px-4 py-2 border rounded-md shadow-sm" />
+
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-4 py-2 border rounded-md shadow-sm"
+            className="px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
           >
             <option value="asc">Date: Ascending</option>
             <option value="desc">Date: Descending</option>
@@ -91,22 +87,50 @@ const Dashboard = () => {
         </div>
 
         <button
-          className="bg-black text-white px-5 py-2 rounded-md shadow hover:bg-gray-800"
-          onClick={() => navigate("/add-application")}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md transition"
+          onClick={() => setShowModal(true)}
         >
           + Add New Application
         </button>
       </div>
 
-      {/* Cards */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {applications.map((app) => (
-          <ApplicationCard key={app.id} {...app} />
-        ))}
+        {filteredApps.length > 0 ? (
+          filteredApps.map((app) => (
+            <ApplicationCard
+              key={app._id}
+              id={app._id}
+              position={app.role}
+              company={app.company}
+              notes={app.notes}
+              status={app.status}
+              dateApplied={app.dateApplied}
+              refreshApplications={fetchApplications}
+              setShowDeleteModal={setShowDeleteModal}
+              setSelectedAppId={setSelectedAppId}
+            />
+          ))
+        ) : (
+          <p className="text-center col-span-full text-gray-500">
+            No applications found.
+          </p>
+        )}
       </div>
+
+      <AddApplicationModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        refreshApplications={fetchApplications}
+      />
+
+      <ConfirmDeleteModal
+        id={selectedAppId}
+        setShowDeleteModal={setShowDeleteModal}
+        showDeleteModal={showDeleteModal}
+        refreshApplications={fetchApplications}
+      />
     </div>
   );
 };
 
 export default Dashboard;
-
