@@ -84,7 +84,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import AddApplication from "./pages/AddApplication";
 import ResumeReview from "./pages/ResumeReview";
 import JDGuidance from "./pages/JDGuidance";
 import Profile from "./pages/Profile";
@@ -104,16 +103,6 @@ const App = () => {
               <PrivateRoute>
                 <MainLayout>
                   <Dashboard />
-                </MainLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/add-application"
-            element={
-              <PrivateRoute>
-                <MainLayout>
-                  <AddApplication />
                 </MainLayout>
               </PrivateRoute>
             }

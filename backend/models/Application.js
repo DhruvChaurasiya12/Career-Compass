@@ -6,7 +6,7 @@ const applicationSchema = new mongoose.Schema({
   role: String,
   status: String,
   notes: String,
-  dateApplied: Date,
+  dateApplied: Date
 });
 
 export default mongoose.model("Application", applicationSchema);
