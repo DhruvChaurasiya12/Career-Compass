@@ -1,34 +1,43 @@
 import React from "react";
 import axios from "axios";
+import {toast} from "react-hot-toast";
 
-const ConfirmDeleteModal = ({id, refreshApplications, setShowDeleteModal, showDeleteModal }) => {
+const ConfirmDeleteModal = ({
+  id,
+  refreshApplications,
+  setShowDeleteModal,
+  showDeleteModal,
+  showToast, // passed from Dashboard
+}) => {
+  if (!showDeleteModal) return null;
 
-    if (!showDeleteModal) return null;
+  const onConfirmDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8000/api/applications/${id}`, {
+        withCredentials: true,
+      });
+      setShowDeleteModal(false);
+      refreshApplications();
+      if (showToast) showToast("Application deleted successfully");
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      toast.error("Failed to delete application. Please try again.");
+    }
+  };
 
-    const onConfirmDelete = async () => {
-        try {
-          await axios.delete(`http://localhost:8000/api/applications/${id}`, {
-            withCredentials: true,
-          });
-          setShowDeleteModal(false);
-          refreshApplications();
-        } catch (error) {
-          console.error("Error deleting application:", error);
-            alert("Failed to delete application. Please try again.");
-        }
-      };
-
-      const onClose = () => {
-  setShowDeleteModal(false);
-};
-
+  const onClose = () => {
+    setShowDeleteModal(false);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Confirm Deletion</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Confirm Deletion
+        </h2>
         <p className="text-gray-600 mb-6">
-          Are you sure you want to delete this application? This action cannot be undone.
+          Are you sure you want to delete this application? This action cannot
+          be undone.
         </p>
 
         <div className="flex justify-end space-x-3">

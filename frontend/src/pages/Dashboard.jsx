@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { FiSearch } from "react-icons/fi";
+import React, {useState, useEffect, useCallback} from "react";
+import {FiSearch} from "react-icons/fi";
 import ApplicationCard from "../components/ApplicationCard";
-import AddApplicationModal from "../components/AddApplicationModal";
+import AddOrEditApplicationModal from "../components/AddOrEditApplicationModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 import axios from "axios";
+import {toast} from "react-hot-toast";
 
 const Dashboard = () => {
   const [applications, setApplications] = useState([]);
@@ -13,32 +14,45 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
+  const [selectedApp, setSelectedApp] = useState(null);
 
   const fetchApplications = useCallback(async () => {
-  try {
-    const query = new URLSearchParams();
-    if (status) query.append("status", status);
-    if (sortOrder) query.append("sort", sortOrder);
+    try {
+      const query = new URLSearchParams();
+      if (status) query.append("status", status);
+      if (sortOrder) query.append("sort", sortOrder);
 
-    const response = await axios.get(`http://localhost:8000/api/applications?${query.toString()}`, {
-      withCredentials: true,
-    });
-    setApplications(response.data);
-  } catch (err) {
-    console.error("Error fetching applications:", err);
-  }
-}, [status, sortOrder]);
+      const response = await axios.get(
+        `http://localhost:8000/api/applications?${query.toString()}`,
+        {withCredentials: true}
+      );
 
-useEffect(() => {
-  fetchApplications();
-}, [fetchApplications]);
+      setApplications(response.data);
+    } catch (err) {
+      console.error("Error fetching applications:", err);
+      toast.error("Failed to fetch applications.");
+    }
+  }, [status, sortOrder]);
 
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
   const filteredApps = applications.filter(
     (app) =>
       app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEdit = (app) => {
+    setSelectedApp(app); // ✅ match backend field
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setSelectedApp(null); // ✅ reset form
+  };
 
   return (
     <div className="min-h-screen bg-blue-50 px-6 py-8">
@@ -88,7 +102,10 @@ useEffect(() => {
 
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md transition"
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setSelectedApp(null); // Reset form
+            setShowModal(true);
+          }}
         >
           + Add New Application
         </button>
@@ -108,6 +125,7 @@ useEffect(() => {
               refreshApplications={fetchApplications}
               setShowDeleteModal={setShowDeleteModal}
               setSelectedAppId={setSelectedAppId}
+              onEdit={() => handleEdit(app)}
             />
           ))
         ) : (
@@ -117,10 +135,11 @@ useEffect(() => {
         )}
       </div>
 
-      <AddApplicationModal
+      <AddOrEditApplicationModal
         show={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={handleModalClose}
         refreshApplications={fetchApplications}
+        selectedApp={selectedApp}
       />
 
       <ConfirmDeleteModal
@@ -128,6 +147,7 @@ useEffect(() => {
         setShowDeleteModal={setShowDeleteModal}
         showDeleteModal={showDeleteModal}
         refreshApplications={fetchApplications}
+        showToast={(msg) => toast.success(msg)}
       />
     </div>
   );

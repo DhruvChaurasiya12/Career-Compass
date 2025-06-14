@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
+import {toast} from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,15 +13,12 @@ const Login = () => {
     password: "",
   });
 
-  const [errorMsg, setErrorMsg] = useState("");
-
   const handleChange = (event) => {
     const {name, value} = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    setErrorMsg(""); // Clear error on input
   };
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -30,12 +28,12 @@ const Login = () => {
     const {email, password} = formData;
 
     if (!email || !password) {
-      setErrorMsg("Both email and password are required.");
+      toast.error("Both email and password are required.");
       return;
     }
 
     if (!isValidEmail(email)) {
-      setErrorMsg("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
@@ -43,23 +41,20 @@ const Login = () => {
       const response = await axios.post(
         "http://localhost:8000/api/auth/login",
         formData,
-        {
-          withCredentials: true,
-        }
+        {withCredentials: true}
       );
 
       if (response.status === 200) {
+        toast.success("Login successful!");
         setAuthenticated(true);
-        console.log("Login successful");
-        setAuthenticated(true); // Update authentication state
-        setFormData({ email: "", password: "" }); // Clear form fields
-        navigate("/dashboard"); 
+        setFormData({email: "", password: ""});
+        navigate("/dashboard");
       }
     } catch (error) {
       const message =
         error.response?.data?.message ||
         "Login failed. Please check your credentials.";
-      setErrorMsg(message);
+      toast.error(message);
     }
   };
 
@@ -102,10 +97,6 @@ const Login = () => {
               required
             />
           </div>
-
-          {errorMsg && (
-            <p className="text-sm text-red-600 mt-2 text-center">{errorMsg}</p>
-          )}
 
           <button
             type="submit"

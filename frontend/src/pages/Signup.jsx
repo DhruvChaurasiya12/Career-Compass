@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-hot-toast";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -11,15 +12,12 @@ const Signup = () => {
     password: "",
   });
 
-  const [errorMsg, setErrorMsg] = useState("");
-
   const handleChange = (event) => {
     const {name, value} = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    setErrorMsg(""); // Clear error on input change
   };
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -32,18 +30,18 @@ const Signup = () => {
     const {fullname, email, password} = formData;
 
     if (!fullname || !email || !password) {
-      setErrorMsg("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
 
     if (!isValidEmail(email)) {
-      setErrorMsg("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     if (!isStrongPassword(password)) {
-      setErrorMsg(
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+      toast.error(
+        "Password must be 8+ characters with uppercase, lowercase, number & symbol."
       );
       return;
     }
@@ -52,19 +50,17 @@ const Signup = () => {
       const signup = await axios.post(
         "http://localhost:8000/api/auth/signup",
         formData,
-        {
-          withCredentials: true,
-        }
+        {withCredentials: true}
       );
 
       if (signup.status === 200) {
-        console.log("Signup successful");
+        toast.success("Signup successful!");
         navigate("/dashboard");
       }
     } catch (error) {
       const message =
         error.response?.data?.message || "Signup failed. Please try again.";
-      setErrorMsg(message);
+      toast.error(message);
     }
   };
 
@@ -121,10 +117,6 @@ const Signup = () => {
               required
             />
           </div>
-
-          {errorMsg && (
-            <p className="text-sm text-red-600 mt-2 text-center">{errorMsg}</p>
-          )}
 
           <button
             type="submit"

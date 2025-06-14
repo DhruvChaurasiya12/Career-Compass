@@ -1,20 +1,16 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 
-export const ProfileInformationCard = ({
-  profile,
-  setProfile,
-  onSave,
-  saving,
-  loading,
-}) => {
-  const handleChange = (e) => {
-    const {name, value} = e.target;
-    setProfile((prev) => ({...prev, [name]: value}));
-  };
+export const ProfileInformationCard = ({profile, onSave, saving, loading}) => {
+  const [fullName, setFullName] = useState("");
+
+  useEffect(() => {
+    setFullName(""); // clear box after backend update
+  }, [profile.fullName]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(profile);
+    if (!fullName.trim()) return;
+    onSave({fullName: fullName.trim()});
   };
 
   return (
@@ -45,8 +41,8 @@ export const ProfileInformationCard = ({
           <input
             type="text"
             name="fullName"
-            value={profile.fullName}
-            onChange={handleChange}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={loading}
           />
@@ -58,11 +54,9 @@ export const ProfileInformationCard = ({
           </label>
           <input
             type="email"
-            name="email"
             value={profile.email}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            disabled={loading}
+            readOnly
+            className="w-full border border-gray-200 bg-gray-100 rounded-lg p-3 text-sm text-gray-500 cursor-not-allowed"
           />
         </div>
 

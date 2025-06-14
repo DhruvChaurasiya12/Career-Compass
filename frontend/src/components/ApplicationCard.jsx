@@ -1,7 +1,6 @@
 import React from "react";
-import { FiCalendar, FiEdit, FiTrash2 } from "react-icons/fi";
-import { MdWork } from "react-icons/md";
-
+import {FiCalendar, FiEdit, FiTrash2} from "react-icons/fi";
+import {MdWork} from "react-icons/md";
 
 const statusColors = {
   Applied: "bg-gray-200 text-gray-800",
@@ -19,6 +18,7 @@ const ApplicationCard = ({
   dateApplied,
   setShowDeleteModal,
   setSelectedAppId,
+  onEdit,
 }) => {
   return (
     <div className="bg-white shadow-md hover:shadow-lg transition rounded-lg p-5 flex flex-col justify-between h-full">
@@ -52,7 +52,10 @@ const ApplicationCard = ({
           {status}
         </span>
         <div className="flex space-x-2">
-          <button className="text-sm text-gray-600 hover:text-blue-600 flex items-center">
+          <button
+            onClick={onEdit}
+            className="text-sm text-gray-600 hover:text-blue-600 flex items-center"
+          >
             <FiEdit className="mr-1" />
             Edit
           </button>

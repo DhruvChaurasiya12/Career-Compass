@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import {toast} from "react-hot-toast";
 
 export const ChangePasswordCard = ({onChangePassword, changing}) => {
   const [form, setForm] = useState({
@@ -12,18 +13,28 @@ export const ChangePasswordCard = ({onChangePassword, changing}) => {
     setForm((prev) => ({...prev, [name]: value}));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.newPassword !== form.confirmNewPassword) {
-      alert("New passwords do not match.");
+      toast.error("New passwords do not match.");
       return;
     }
 
-    onChangePassword({
-      currentPassword: form.currentPassword,
-      newPassword: form.newPassword,
-    });
+    try {
+      await onChangePassword({
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      });
+
+      setForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -56,6 +67,7 @@ export const ChangePasswordCard = ({onChangePassword, changing}) => {
             name="currentPassword"
             value={form.currentPassword}
             onChange={handleChange}
+            required
             className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -69,6 +81,7 @@ export const ChangePasswordCard = ({onChangePassword, changing}) => {
             name="newPassword"
             value={form.newPassword}
             onChange={handleChange}
+            required
             className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -82,6 +95,7 @@ export const ChangePasswordCard = ({onChangePassword, changing}) => {
             name="confirmNewPassword"
             value={form.confirmNewPassword}
             onChange={handleChange}
+            required
             className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
