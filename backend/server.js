@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import analysisRoutes from "./routes/analysisRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 // Load env variables
 dotenv.config();
@@ -33,6 +34,7 @@ app.use(cookieParser()); // Parse cookies
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/analysis", analysisRoutes);
+app.use("/api", profileRoutes);
 
 // Health check
 app.get("/", (req, res) => {
