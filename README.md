@@ -25,12 +25,6 @@
 
 ---
 
-## 📸 Screenshots
-
-*(Add screenshots of Dashboard, Resume Review Page, etc. if available)*
-
----
-
 ## 💻 Getting Started
 
 ### Prerequisites
